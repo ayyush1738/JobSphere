@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import fitz  # PyMuPDF
 import os
 
+app = Flask(__name__)
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -35,11 +36,15 @@ def upload_file():
     # Extract text from the PDF
     extracted_text = extract_text_from_pdf(file_path)
 
-def perform_ner(text):
-    """Perform Named Entity Recognition using SpaCy and return a list of entities."""
-    doc = nlp(text)
-    entities = [{"text": ent.text, "label": ent.label_, "start": ent.start_char, "end": ent.end_char} for ent in doc.ents]
-    return entities
+    # Optionally, you can extract skills from the text here
+    skills = extract_skills_from_text(extracted_text)
+
+    return jsonify({'text': extracted_text, 'skills': skills})
+
+def extract_skills_from_text(text):
+    # Here, you could implement a method to extract skills from the text.
+    # For simplicity, let's just return a mock list of skills.
+    return ["Python", "JavaScript", "React"]
 
 if __name__ == '__main__':
     app.run(debug=True)
