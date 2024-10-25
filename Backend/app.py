@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 # Load environment variables from the .env file
 load_dotenv()
 
-# Access the environment variables using os.getenv()
+# Access the environment variables
 RAPIDAPI_URL = os.getenv("RAPIDAPI_URL")
 RAPIDAPI_HOST = os.getenv("RAPIDAPI_HOST")
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
@@ -37,28 +37,19 @@ patterns = [
 ]
 ruler.add_patterns(patterns)
 
-# RapidAPI job search endpoint and authentication
-
-
 # Function to search jobs using job title
 def search_jobs_by_title(job_title):
-    # Payload for job search API
     payload = {
-	"search_term": job_title,
-	"location": "mumbai",
-	"results_wanted": 5,
-	"site_name": ["indeed", "linkedin", "zip_recruiter", "glassdoor"],
-	"distance": 50,
-	"job_type": "fulltime",
-	"is_remote": False,
-	"linkedin_fetch_description": False,
-	"hours_old": 72
+        "search_term": job_title,
+        "location": "",
+        "results_wanted": 5,
+        "site_name": ["indeed", "linkedin", "zip_recruiter", "glassdoor"],
+        "distance": 100,
+        "job_type": "fulltime",
+        "is_remote": False,
+        "linkedin_fetch_description": False,
+        "hours_old": 72
     }
-    # {
-    #     "search_term": job_title,
-    #     "results_wanted": 5,  # Number of job results to return
-    #     "site_name": ["indeed", "linkedin", "zip_recruiter", "glassdoor"]
-    # }
 
     headers = {
         "x-rapidapi-key": RAPIDAPI_KEY,
@@ -66,10 +57,8 @@ def search_jobs_by_title(job_title):
         "Content-Type": "application/json"
     }
 
-    # Make a POST request to the job search API
     response = requests.post(RAPIDAPI_URL, json=payload, headers=headers)
 
-    # If the request is successful, return the job data
     if response.status_code == 200:
         return response.json()  # Return the jobs data in JSON format
     else:
@@ -107,13 +96,13 @@ def upload_file():
 
     # Use the first job title found to search for jobs (if available)
     if job_titles:
-        job_title = job_titles[1]  # Take the first job title
+        job_title = job_titles[1] # Take the first job title
         jobs = search_jobs_by_title(job_title)  # Fetch job listings from API
     else:
-        jobs = {"message": "No job title found in the resume"}
+        jobs = []
 
     # Return the recognized job titles and job search results in JSON format
-    return jsonify({'jobs': jobs})
+    return jsonify({'entities': {'job_titles': job_titles, 'skills': []}, 'jobs': jobs})
 
 if __name__ == '__main__':
     app.run(debug=True)
